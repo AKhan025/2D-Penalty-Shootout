@@ -159,7 +159,7 @@ class Ball(pygame.sprite.Sprite):
           self.rect.x += x_speed[0] # Moves the ball x position towards the crosshair x position.
         elif self.rect.x <= (self.target_x_pos - 25): # Need to - 52 as the ball x position is not the center x position whereas the crosshair x position is the center.
           self.rect.x += 0 # Stops the ball x position from moving if the position is the same.
-          ball_check = True
+        ball_check = True
   
         if self.rect.y != (self.target_y_pos - 25): # Checks if the ball y position has not reached the crosshair.
             if y_speed[0] < 0: # Checks if the y speed is less than 0.
@@ -170,7 +170,7 @@ class Ball(pygame.sprite.Sprite):
           if ball_reset: # checks if ball needs resetting
             self.rect.y += 0 # Ball speed is 0
           self.rect.y -=0 # Stops the ball y position from moving if the position is the same
-          ball_check = True
+        ball_check = True
           
   def reset(self):
     # This function returns the ball to its original position after a shot.
@@ -436,12 +436,23 @@ def displayScore(state):
     scorefont = pygame.font.Font(None, 115)
     score_surface = scorefont.render('Score: ' + str(score), False, 'White')
     screen.blit(score_surface, overScore_Rect)
-def goalUpdate():
-  global gamestate, ball_check, score_check
+def goalUpdate(current_time):
+  global gamestate, ball_check, score_check, t2
   if ball_check and score_check == "Goal":
-    gamestate = "Goal"
+    if t2 == 0:
+      t2 = current_time
+
+    if current_time >= t2 + 1000:
+      gamestate = "Goal"
+      t2 = 0
   elif ball_check and score_check == "Miss":
-    gamestate = "Miss"
+    if t2 == 0:
+      t2 = current_time
+
+    if current_time >= t2 + 1000:
+      gamestate = "Miss"
+      t2 = 0
+    
 def displayTimer(t):
   # Displays how long the user has left.
   global gamestate, timerBoost
@@ -579,7 +590,9 @@ debuff.add(Debuff())
 
 timer = 0
 reset_timer = 0
-num = 0
+num = 0 
+t1 = 0
+t2 = 0
 # Game running
 while True:
   for event in pygame.event.get():
@@ -594,6 +607,13 @@ while True:
   current_time = pygame.time.get_ticks()
   pos = pygame.mouse.get_pos()
   
+  if t1 == 0:
+    t1 = current_time
+
+  if current_time >= t1 + 1000:
+    print("Gamestate:", gamestate)
+    t1 = current_time
+
   if gamestate == "Game":
 
     if not timeSet:
@@ -640,7 +660,7 @@ while True:
       if reset_timer == 0:
         reset_timer = current_time
 
-      if current_time >= reset_timer + 0000:
+      if current_time >= reset_timer + 1000:
         debuff_reset = False
         debuff_spawned = False
         randomised = False
@@ -671,7 +691,7 @@ while True:
 
     displayTimer(120)
     displayScore("Game")
-    goalUpdate()
+    goalUpdate(current_time)
   elif gamestate == "Goal":
     
     ball_reset = True
@@ -684,10 +704,11 @@ while True:
         timer = current_time
 
     # Check if 5 seconds have passed since entering the goal state
-    if current_time >= timer + 4000:
+    if current_time >= timer + 1000:
       ball_check = False
       score_check = ""
       gamestate = "Game"
+      timer = 0
     screen.blit(goalScreen,(0,0))
   elif gamestate == "Miss":
     
@@ -701,10 +722,11 @@ while True:
         timer = current_time
 
     # Check if 5 seconds have passed since entering the miss state
-    if current_time >= timer + 4000:
+    if current_time >= timer + 1000:
       ball_check = False
       score_check = ""
       gamestate = "Game"
+      timer = 0
     screen.blit(missScreen,(0,0))
 
   elif gamestate == "Menu":
