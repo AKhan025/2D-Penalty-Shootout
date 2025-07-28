@@ -24,12 +24,11 @@ A fun and interactive football (soccer) **Penalty Shootout** game developed in *
 
 ## 🖼️ Screenshots
 
-> *(Add screenshots or animated GIFs showing the main menu, shootout in progress, and score screen)*
+### Menu
+![Menu](Screenshots/Menu.gif)
 
-<p align="center">
-  <img src="screenshots/main-menu.png" width="300"/>
-  <img src="screenshots/gameplay.png" width="300"/>
-</p>
+### Shooting
+![Shooting](Screenshots/Shooting.gif)
 
 ---
 
